@@ -9,6 +9,7 @@ from django.db import models
 class User(AbstractUser):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4(),
                           editable=False)
+    name = models.CharField(default='Amir', max_length=48)
     charge = models.IntegerField
     is_chef = models.BooleanField(default=False)
 
@@ -17,7 +18,7 @@ class Food(models.Model):
     name = models.CharField(max_length=48)
     price = models.IntegerField(default=0)
     capacity = models.IntegerField(default=0)
-    pub_date = models.DateTimeField('date published')
+    pub_date = models.DateField('date published')
 
 
 class FoodReserve(models.Model):
