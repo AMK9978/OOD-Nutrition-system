@@ -1,15 +1,38 @@
-from django.urls import include, path
-from rest_framework import routers
+from django.urls import path
+from nutrition.views import FoodReserveViewSet, FoodViewSet, UserViewSet
 
-from . import views
+food_list = FoodViewSet.as_view({
+    'get': 'list',
+    'post': 'create'
+})
+food_detail = FoodViewSet.as_view({
+    'get': 'retrieve',
+    'put': 'update',
+    'patch': 'partial_update',
+    'delete': 'destroy'
+})
+foodReserve_list = FoodReserveViewSet.as_view({
+    'get': 'list',
+    'post': 'create'
+})
+foodReserve_detail = FoodReserveViewSet.as_view({
+    'get': 'retrieve',
+    'put': 'update',
+    'patch': 'partial_update',
+    'delete': 'destroy'
+})
+user_list = UserViewSet.as_view({
+    'get': 'list',
+})
+user_detail = UserViewSet.as_view({
+    'get': 'retrieve'
+})
 
-router = routers.DefaultRouter()
-router.register('programs', views.FoodProgramViewSet)
-
-# Wire up our API using automatic URL routing.
-# TODO: All routes must check sent JWT and authenticate it automatically
 urlpatterns = [
-    path('', include(router.urls)),
-    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    path('programs/', views.FoodProgramViewSet.as_view)
+    path('user/', user_list, name='user-list'),
+    path('user/<int:pk>/', user_detail,name='user-detail'),
+    path('food/', food_list, name='food-list'),
+    path('food/<int:pk>/', food_detail, name='food-detail'),
+    path('food-reserve/', foodReserve_list, name='foodReserve-list'),
+    path('food-reserve/<int:pk>/', foodReserve_detail, name='foodReserve-detail'),
 ]
