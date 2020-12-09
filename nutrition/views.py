@@ -1,6 +1,9 @@
+import datetime
+
 import requests
 from rest_framework import viewsets
 from rest_framework.exceptions import ValidationError
+from rest_framework.response import Response
 
 from nutrition.models import Food, FoodReserve, User
 from nutrition.serializers import FoodReserveSerializer, FoodSerializer, UserSerializer
@@ -16,10 +19,18 @@ class FoodViewSet(viewsets.ModelViewSet):
     queryset = Food.objects.all()
     serializer_class = FoodSerializer
 
+    def list(self, request, *args, **kwargs):
+        tomorrow = datetime.datetime.today().date() + datetime.timedelta(days=1)
+        next_week = datetime.datetime.today().date() + datetime.timedelta(days=7)
+        return Response(list(Food.objects.filter(pub_date__range=[tomorrow, next_week]).values()))
+
 
 class FoodReserveViewSet(viewsets.ModelViewSet):
     queryset = FoodReserve.objects.all()
     serializer_class = FoodReserveSerializer
+
+    def retrieve(self, request, *args, **kwargs):
+        return Response(list(FoodReserve.objects.filter(user_id_id=kwargs["pk"]).values()))
 
     def perform_create(self, serializer):
         my_user = self.request.data['user_id']
@@ -27,6 +38,9 @@ class FoodReserveViewSet(viewsets.ModelViewSet):
         user = User.objects.get(id=my_user)
         food = Food.objects.get(id=my_food)
         print(self.request.headers.get('Authorization'))
+        today_date = datetime.datetime.today().date()
+        if today_date > food.pub_date:
+            raise ValidationError('Invalid food to be reserved')
         if user.charge < food.price:
             raise ValidationError('not enough charge')
         if food.capacity <= 0:
