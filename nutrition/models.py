@@ -8,10 +8,8 @@ from datetime import datetime
 
 # Create your models here.
 class User(AbstractUser):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4(),
-                          editable=False)
     name = models.CharField(default='Amir', max_length=48)
-    charge = models.IntegerField
+    charge = models.IntegerField(default=0)
     is_chef = models.BooleanField(default=False)
 
 
