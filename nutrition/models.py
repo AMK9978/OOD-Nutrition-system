@@ -1,9 +1,9 @@
 # Create your models here.
-import uuid
+
+from datetime import datetime
 
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-from datetime import datetime
 
 
 # Create your models here.
@@ -19,8 +19,14 @@ class Food(models.Model):
     capacity = models.IntegerField(default=0)
     pub_date = models.DateField('date published')
 
+    def __str__(self):
+        return "{}-{}".format(self.name, self.pub_date)
+
 
 class FoodReserve(models.Model):
-    date = models.DateTimeField(default=datetime.today())
+    date = models.DateField(default=datetime.now().date())
     user_id = models.ForeignKey(User, related_name="foods_reserved", on_delete=models.CASCADE)
     food_id = models.ForeignKey(Food, related_name="reserved", on_delete=models.CASCADE)
+
+    def __str__(self):
+        return "{}-{}-{}".format(self.user_id, self.food_id, self.date)

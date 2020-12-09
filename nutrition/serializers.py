@@ -8,7 +8,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'charge', 'is_chef', 'foods_reserved']
+        fields = ['id', 'name', 'charge', 'is_chef', 'foods_reserved']
 
 
 class FoodSerializer(serializers.ModelSerializer):

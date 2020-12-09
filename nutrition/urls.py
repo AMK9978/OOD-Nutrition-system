@@ -1,6 +1,6 @@
 from django.urls import path
 
-from nutrition.views import FoodReserveViewSet, FoodViewSet, UserViewSet
+from nutrition.views import FoodReserveViewSet, FoodViewSet, UserViewSet, Charge
 
 food_list = FoodViewSet.as_view({
     'get': 'list',
@@ -18,6 +18,7 @@ foodReserve_list = FoodReserveViewSet.as_view({
 })
 foodReserve_detail = FoodReserveViewSet.as_view({
     'get': 'retrieve',
+    'post': 'create',
     'put': 'update',
     'patch': 'partial_update',
     'delete': 'destroy'
@@ -28,8 +29,16 @@ user_list = UserViewSet.as_view({
 user_detail = UserViewSet.as_view({
     'get': 'retrieve'
 })
+charge_detail = Charge.as_view({
+    'post': 'retrieve'
+})
+auth_detail = Charge.as_view({
+    'post': 'retrieve'
+})
 
 urlpatterns = [
+    path('auth/', auth_detail),
+    path('charge/', charge_detail),
     path('user/', user_list, name='user-list'),
     path('user/<int:pk>/', user_detail, name='user-detail'),
     path('food/', food_list, name='food-list'),
