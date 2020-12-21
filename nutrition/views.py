@@ -1,6 +1,8 @@
 import datetime
 
 import requests
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 from rest_framework import viewsets
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
@@ -8,6 +10,8 @@ from rest_framework.response import Response
 from nutrition.models import Food, FoodReserve, User
 from nutrition.serializers import FoodReserveSerializer, FoodSerializer, UserSerializer
 from .Payment import PaymentGatewayAdapter
+
+CACHE_TTL = 60 * 2
 
 
 class UserViewSet(viewsets.ReadOnlyModelViewSet):
@@ -19,6 +23,7 @@ class FoodViewSet(viewsets.ModelViewSet):
     queryset = Food.objects.all()
     serializer_class = FoodSerializer
 
+    @method_decorator(cache_page(CACHE_TTL))
     def list(self, request, *args, **kwargs):
         tomorrow = datetime.datetime.today().date() + datetime.timedelta(days=1)
         next_week = datetime.datetime.today().date() + datetime.timedelta(days=7)
@@ -29,6 +34,7 @@ class FoodReserveViewSet(viewsets.ModelViewSet):
     queryset = FoodReserve.objects.all()
     serializer_class = FoodReserveSerializer
 
+    @method_decorator(cache_page(CACHE_TTL))
     def retrieve(self, request, *args, **kwargs):
         return Response(list(FoodReserve.objects.filter(user_id_id=kwargs["pk"]).values()))
 
