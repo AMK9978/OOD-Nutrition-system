@@ -2,6 +2,7 @@ import datetime
 import json
 
 import requests
+from django.http import JsonResponse
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from rest_framework import viewsets
@@ -10,7 +11,6 @@ from rest_framework.response import Response
 
 from nutrition.models import Food, FoodReserve, User
 from nutrition.serializers import FoodReserveSerializer, FoodSerializer, UserSerializer
-from .Payment import PaymentGatewayAdapter
 
 CACHE_TTL = 60 * 2
 
@@ -131,7 +131,8 @@ class Login(viewsets.ModelViewSet):
         # Send request to auth server and return token to user
         url = "http://localhost:9090/login"
 
-        payload = "{\n  \"username\":\"" + request['username'] + "\", \n  \"password\":\"" + request['password'] + "\"\n}"
+        payload = "{\n  \"username\":\"" + request['username'] + "\", \n  \"password\":\"" + request[
+            'password'] + "\"\n}"
         headers = {
             'Content-Type': 'application/json'
         }
@@ -141,5 +142,4 @@ class Login(viewsets.ModelViewSet):
 
 class Charge(viewsets.ModelViewSet):
     def retrieve(self, request, *args, **kwargs):
-        return PaymentGatewayAdapter().sep_request_token(request.data['amount'], 0,
-                                                         ['https://google.com', 'https://google.com'])
+        return JsonResponse({"msg": "Comming soon!"}, status=200)
