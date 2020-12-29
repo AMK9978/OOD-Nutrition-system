@@ -1,7 +1,9 @@
 import datetime
 import json
 
+import grpc
 import requests
+import auth_pb2_grpc
 from django.http import JsonResponse
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
@@ -76,7 +78,9 @@ class AdminLogin(viewsets.ModelViewSet):
         print(username)
         print(password)
         url = "http://localhost:9090/login"
-
+        channel = grpc.insecure_channel('localhost:50051')
+        stub = auth_pb2_grpc.AuthStub(channel)
+        stub.Login()
         payload = "{\n  \"username\":\"" + username + "\", \n  \"password\":\"" + password + "\"\n}"
         headers = {
             'Content-Type': 'application/json'
