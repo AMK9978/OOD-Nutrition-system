@@ -1,0 +1,55 @@
+syntax = "proto3";
+
+package auth;
+
+import "google/api/annotations.proto";
+
+option go_package = ".;pb";
+
+service Auth {
+  rpc Signup (User) returns (User) {
+    option (google.api.http) = {
+      post: "/signup"
+      body: "*"
+    };
+  };
+
+  rpc Login (Credentials) returns (PairToken) {
+    option (google.api.http) = {
+      post: "/login"
+      body: "*"
+    };
+  }
+
+  rpc RefreshAccessToken (JWTToken) returns (JWTToken) {
+    option (google.api.http) = {
+      post: "/refresh"
+      body: "*"
+    };
+  };
+}
+
+message Credentials {
+  string username = 1;
+  string password = 2;
+}
+
+message JWTToken {
+  string token = 1;
+}
+
+message PairToken {
+  JWTToken refresh = 1;
+  JWTToken access = 2;
+}
+
+message User {
+  uint64 ID = 1;
+  string firstName = 2;
+  string lastName = 3;
+  string email = 4;
+  string username = 5;
+  string password = 6;
+  string gender = 7;
+  uint64 roleId = 8;
+}

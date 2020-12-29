@@ -1,4 +1,5 @@
 import datetime
+import json
 
 import requests
 from django.utils.decorators import method_decorator
@@ -61,12 +62,80 @@ class FoodReserveViewSet(viewsets.ModelViewSet):
         serializer.save()
 
 
-class Auth(viewsets.ModelViewSet):
+class AdminLogin(viewsets.ModelViewSet):
+    def retrieve(self, request, *args, **kwargs):
+        env_file = open('../.env', 'r')
+        username = ""
+        password = ""
+        for line in env_file.readlines():
+            if line.startswith("ADMIN_USER="):
+                username = line.split("ADMIN_USER=")[1].strip()
+            elif line.startswith("ADMIN_PASS="):
+                password = line.split("ADMIN_PASS=")[1].strip()
+        env_file.close()
+        print(username)
+        print(password)
+        url = "http://localhost:9090/login"
+
+        payload = "{\n  \"username\":\"" + username + "\", \n  \"password\":\"" + password + "\"\n}"
+        headers = {
+            'Content-Type': 'application/json'
+        }
+
+        response = requests.request("POST", url, headers=headers, data=payload)
+        result = json.loads(response.text)
+        refresh = result["refresh"]["token"]
+        access = result["access"]["token"]
+        admin_file = open("../.admin_file", 'w')
+        admin_file.write("access:{}".format(access))
+        admin_file.write("\n")
+        admin_file.write("refresh:{}".format(refresh))
+        admin_file.close()
+        return response
+
+
+def read_admin_file():
+    admin_file = open('../.admin_file', 'r')
+    access = ""
+    refresh = ""
+    for r in admin_file.readlines():
+        if r.startswith("access:"):
+            access = r.split("access:")[1]
+        elif r.startswith("refresh:"):
+            refresh = r.split("refresh:")[1]
+    return access, refresh
+
+
+class Signup(viewsets.ModelViewSet):
+    def retrieve(self, request, *args, **kwargs):
+        url = "http://localhost:9090/signup"
+        access, refresh = read_admin_file()
+
+        if access == "":
+            AdminLogin.as_view()
+            access, refresh = read_admin_file()
+
+        payload = "{\n  \"username\":\"" + request['username'] + "\", \n  \"password\":\"" + request[
+            'password'] + "\"\n}"
+        headers = {
+            'Authorization': 'Bearer {}'.format(access),
+            'Content-Type': 'application/json'
+        }
+
+        response = requests.request("POST", url, headers=headers, data=payload)
+        return response
+
+
+class Login(viewsets.ModelViewSet):
     def retrieve(self, request, *args, **kwargs):
         # Send request to auth server and return token to user
-        response = requests.post("127.0.0.1:50051",
-                                 {"username": request.data['username'], "password": request.data['password']})
+        url = "http://localhost:9090/login"
 
+        payload = "{\n  \"username\":\"" + request['username'] + "\", \n  \"password\":\"" + request['password'] + "\"\n}"
+        headers = {
+            'Content-Type': 'application/json'
+        }
+        response = requests.request("POST", url, headers=headers, data=payload)
         return response
 
 
