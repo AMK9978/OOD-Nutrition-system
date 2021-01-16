@@ -3,7 +3,6 @@ import json
 
 import grpc
 import requests
-import auth_pb2_grpc
 from django.http import JsonResponse
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
@@ -11,6 +10,7 @@ from rest_framework import viewsets
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 
+import auth_pb2_grpc
 from nutrition.models import Food, FoodReserve, User
 from nutrition.serializers import FoodReserveSerializer, FoodSerializer, UserSerializer
 
@@ -78,9 +78,13 @@ class AdminLogin(viewsets.ModelViewSet):
         print(username)
         print(password)
         url = "http://localhost:9090/login"
+
+        # TODO: Use gRPC calls instead of http calls which are being used currently:
         channel = grpc.insecure_channel('localhost:50051')
         stub = auth_pb2_grpc.AuthStub(channel)
         stub.Login()
+        # End of gRPC
+
         payload = "{\n  \"username\":\"" + username + "\", \n  \"password\":\"" + password + "\"\n}"
         headers = {
             'Content-Type': 'application/json'

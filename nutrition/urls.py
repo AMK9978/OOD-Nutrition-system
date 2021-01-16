@@ -1,6 +1,6 @@
 from django.urls import path
 
-from nutrition.views import FoodReserveViewSet, FoodViewSet, UserViewSet, Charge, Auth, Login, Signup
+from nutrition.views import FoodReserveViewSet, FoodViewSet, UserViewSet, Charge, Login, Signup
 
 food_list = FoodViewSet.as_view({
     'get': 'list',
