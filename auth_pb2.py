@@ -20,11 +20,82 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=b'Z\004.;pb',
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\nauth.proto\x12\x04\x61uth\x1a\x1cgoogle/api/annotations.proto\"1\n\x0b\x43redentials\x12\x10\n\x08username\x18\x01 \x01(\t\x12\x10\n\x08password\x18\x02 \x01(\t\"\x19\n\x08JWTToken\x12\r\n\x05token\x18\x01 \x01(\t\"L\n\tPairToken\x12\x1f\n\x07refresh\x18\x01 \x01(\x0b\x32\x0e.auth.JWTToken\x12\x1e\n\x06\x61\x63\x63\x65ss\x18\x02 \x01(\x0b\x32\x0e.auth.JWTToken\"\x8a\x01\n\x04User\x12\n\n\x02ID\x18\x01 \x01(\x04\x12\x11\n\tfirstName\x18\x02 \x01(\t\x12\x10\n\x08lastName\x18\x03 \x01(\t\x12\r\n\x05\x65mail\x18\x04 \x01(\t\x12\x10\n\x08username\x18\x05 \x01(\t\x12\x10\n\x08password\x18\x06 \x01(\t\x12\x0e\n\x06gender\x18\x07 \x01(\t\x12\x0e\n\x06roleId\x18\x08 \x01(\x04\x32\xc7\x01\n\x04\x41uth\x12\x34\n\x06Signup\x12\n.auth.User\x1a\n.auth.User\"\x12\x82\xd3\xe4\x93\x02\x0c\"\x07/signup:\x01*\x12>\n\x05Login\x12\x11.auth.Credentials\x1a\x0f.auth.PairToken\"\x11\x82\xd3\xe4\x93\x02\x0b\"\x06/login:\x01*\x12I\n\x12RefreshAccessToken\x12\x0e.auth.JWTToken\x1a\x0e.auth.JWTToken\"\x13\x82\xd3\xe4\x93\x02\r\"\x08/refresh:\x01*B\x06Z\x04.;pbb\x06proto3'
+  serialized_pb=b'\n\nauth.proto\x12\x04\x61uth\x1a\x1cgoogle/api/annotations.proto\"8\n\x0cPairPassword\x12\x13\n\x0boldPassword\x18\x01 \x01(\t\x12\x13\n\x0bnewPassword\x18\x02 \x01(\t\"\x14\n\x06UserID\x12\n\n\x02Id\x18\x01 \x03(\x04\"1\n\x0b\x43redentials\x12\x10\n\x08username\x18\x01 \x01(\t\x12\x10\n\x08password\x18\x02 \x01(\t\"\x19\n\x08JWTToken\x12\r\n\x05token\x18\x01 \x01(\t\"L\n\tPairToken\x12\x1f\n\x07refresh\x18\x01 \x01(\x0b\x32\x0e.auth.JWTToken\x12\x1e\n\x06\x61\x63\x63\x65ss\x18\x02 \x01(\x0b\x32\x0e.auth.JWTToken\"\"\n\x05Users\x12\x19\n\x05Users\x18\x01 \x03(\x0b\x32\n.auth.User\"\x8a\x01\n\x04User\x12\n\n\x02ID\x18\x01 \x01(\x04\x12\x11\n\tfirstName\x18\x02 \x01(\t\x12\x10\n\x08lastName\x18\x03 \x01(\t\x12\r\n\x05\x65mail\x18\x04 \x01(\t\x12\x10\n\x08username\x18\x05 \x01(\t\x12\x10\n\x08password\x18\x06 \x01(\t\x12\x0e\n\x06gender\x18\x07 \x01(\t\x12\x0e\n\x06roleId\x18\x08 \x01(\x04\x32\xd9\x02\n\x04\x41uth\x12\x34\n\x06Signup\x12\n.auth.User\x1a\n.auth.User\"\x12\x82\xd3\xe4\x93\x02\x0c\"\x07/signup:\x01*\x12>\n\x05Login\x12\x11.auth.Credentials\x1a\x0f.auth.PairToken\"\x11\x82\xd3\xe4\x93\x02\x0b\"\x06/login:\x01*\x12I\n\x12RefreshAccessToken\x12\x0e.auth.JWTToken\x1a\x0e.auth.JWTToken\"\x13\x82\xd3\xe4\x93\x02\r\"\x08/refresh:\x01*\x12>\n\x0bGetUserInfo\x12\x0c.auth.UserID\x1a\x0b.auth.Users\"\x14\x82\xd3\xe4\x93\x02\x0e\"\t/getusers:\x01*\x12P\n\x0e\x43hangePassword\x12\x12.auth.PairPassword\x1a\n.auth.User\"\x1e\x82\xd3\xe4\x93\x02\x18\"\x13/user/edit_password:\x01*B\x06Z\x04.;pbb\x06proto3'
   ,
   dependencies=[google_dot_api_dot_annotations__pb2.DESCRIPTOR,])
 
 
+
+
+_PAIRPASSWORD = _descriptor.Descriptor(
+  name='PairPassword',
+  full_name='auth.PairPassword',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='oldPassword', full_name='auth.PairPassword.oldPassword', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='newPassword', full_name='auth.PairPassword.newPassword', index=1,
+      number=2, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=50,
+  serialized_end=106,
+)
+
+
+_USERID = _descriptor.Descriptor(
+  name='UserID',
+  full_name='auth.UserID',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='Id', full_name='auth.UserID.Id', index=0,
+      number=1, type=4, cpp_type=4, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=108,
+  serialized_end=128,
+)
 
 
 _CREDENTIALS = _descriptor.Descriptor(
@@ -61,8 +132,8 @@ _CREDENTIALS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=50,
-  serialized_end=99,
+  serialized_start=130,
+  serialized_end=179,
 )
 
 
@@ -93,8 +164,8 @@ _JWTTOKEN = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=101,
-  serialized_end=126,
+  serialized_start=181,
+  serialized_end=206,
 )
 
 
@@ -132,8 +203,40 @@ _PAIRTOKEN = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=128,
-  serialized_end=204,
+  serialized_start=208,
+  serialized_end=284,
+)
+
+
+_USERS = _descriptor.Descriptor(
+  name='Users',
+  full_name='auth.Users',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='Users', full_name='auth.Users.Users', index=0,
+      number=1, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=286,
+  serialized_end=320,
 )
 
 
@@ -213,17 +316,35 @@ _USER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=207,
-  serialized_end=345,
+  serialized_start=323,
+  serialized_end=461,
 )
 
 _PAIRTOKEN.fields_by_name['refresh'].message_type = _JWTTOKEN
 _PAIRTOKEN.fields_by_name['access'].message_type = _JWTTOKEN
+_USERS.fields_by_name['Users'].message_type = _USER
+DESCRIPTOR.message_types_by_name['PairPassword'] = _PAIRPASSWORD
+DESCRIPTOR.message_types_by_name['UserID'] = _USERID
 DESCRIPTOR.message_types_by_name['Credentials'] = _CREDENTIALS
 DESCRIPTOR.message_types_by_name['JWTToken'] = _JWTTOKEN
 DESCRIPTOR.message_types_by_name['PairToken'] = _PAIRTOKEN
+DESCRIPTOR.message_types_by_name['Users'] = _USERS
 DESCRIPTOR.message_types_by_name['User'] = _USER
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
+
+PairPassword = _reflection.GeneratedProtocolMessageType('PairPassword', (_message.Message,), {
+  'DESCRIPTOR' : _PAIRPASSWORD,
+  '__module__' : 'auth_pb2'
+  # @@protoc_insertion_point(class_scope:auth.PairPassword)
+  })
+_sym_db.RegisterMessage(PairPassword)
+
+UserID = _reflection.GeneratedProtocolMessageType('UserID', (_message.Message,), {
+  'DESCRIPTOR' : _USERID,
+  '__module__' : 'auth_pb2'
+  # @@protoc_insertion_point(class_scope:auth.UserID)
+  })
+_sym_db.RegisterMessage(UserID)
 
 Credentials = _reflection.GeneratedProtocolMessageType('Credentials', (_message.Message,), {
   'DESCRIPTOR' : _CREDENTIALS,
@@ -246,6 +367,13 @@ PairToken = _reflection.GeneratedProtocolMessageType('PairToken', (_message.Mess
   })
 _sym_db.RegisterMessage(PairToken)
 
+Users = _reflection.GeneratedProtocolMessageType('Users', (_message.Message,), {
+  'DESCRIPTOR' : _USERS,
+  '__module__' : 'auth_pb2'
+  # @@protoc_insertion_point(class_scope:auth.Users)
+  })
+_sym_db.RegisterMessage(Users)
+
 User = _reflection.GeneratedProtocolMessageType('User', (_message.Message,), {
   'DESCRIPTOR' : _USER,
   '__module__' : 'auth_pb2'
@@ -263,8 +391,8 @@ _AUTH = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=348,
-  serialized_end=547,
+  serialized_start=464,
+  serialized_end=809,
   methods=[
   _descriptor.MethodDescriptor(
     name='Signup',
@@ -294,6 +422,26 @@ _AUTH = _descriptor.ServiceDescriptor(
     input_type=_JWTTOKEN,
     output_type=_JWTTOKEN,
     serialized_options=b'\202\323\344\223\002\r\"\010/refresh:\001*',
+    create_key=_descriptor._internal_create_key,
+  ),
+  _descriptor.MethodDescriptor(
+    name='GetUserInfo',
+    full_name='auth.Auth.GetUserInfo',
+    index=3,
+    containing_service=None,
+    input_type=_USERID,
+    output_type=_USERS,
+    serialized_options=b'\202\323\344\223\002\016\"\t/getusers:\001*',
+    create_key=_descriptor._internal_create_key,
+  ),
+  _descriptor.MethodDescriptor(
+    name='ChangePassword',
+    full_name='auth.Auth.ChangePassword',
+    index=4,
+    containing_service=None,
+    input_type=_PAIRPASSWORD,
+    output_type=_USER,
+    serialized_options=b'\202\323\344\223\002\030\"\023/user/edit_password:\001*',
     create_key=_descriptor._internal_create_key,
   ),
 ])

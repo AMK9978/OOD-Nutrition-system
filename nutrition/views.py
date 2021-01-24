@@ -79,12 +79,6 @@ class AdminLogin(viewsets.ModelViewSet):
         print(password)
         url = "http://localhost:9090/login"
 
-        # TODO: Use gRPC calls instead of http calls which are being used currently:
-        channel = grpc.insecure_channel('localhost:50051')
-        stub = auth_pb2_grpc.AuthStub(channel)
-        stub.Login()
-        # End of gRPC
-
         payload = "{\n  \"username\":\"" + username + "\", \n  \"password\":\"" + password + "\"\n}"
         headers = {
             'Content-Type': 'application/json'
@@ -114,38 +108,21 @@ def read_admin_file():
     return access, refresh
 
 
-class Signup(viewsets.ModelViewSet):
-    def retrieve(self, request, *args, **kwargs):
-        url = "http://localhost:9090/signup"
-        access, refresh = read_admin_file()
-
-        if access == "":
-            AdminLogin.as_view()
-            access, refresh = read_admin_file()
-
-        payload = "{\n  \"username\":\"" + request['username'] + "\", \n  \"password\":\"" + request[
-            'password'] + "\"\n}"
-        headers = {
-            'Authorization': 'Bearer {}'.format(access),
-            'Content-Type': 'application/json'
-        }
-
-        response = requests.request("POST", url, headers=headers, data=payload)
-        return response
-
-
 class Login(viewsets.ModelViewSet):
     def retrieve(self, request, *args, **kwargs):
-        # Send request to auth server and return token to user
-        url = "http://localhost:9090/login"
-
-        payload = "{\n  \"username\":\"" + request['username'] + "\", \n  \"password\":\"" + request[
-            'password'] + "\"\n}"
-        headers = {
-            'Content-Type': 'application/json'
-        }
-        response = requests.request("POST", url, headers=headers, data=payload)
-        return response
+        # TODO: Use gRPC calls instead of http calls which are being used currently:
+        channel = grpc.insecure_channel('localhost:50051')
+        stub = auth_pb2_grpc.AuthStub(channel)
+        import auth_pb2
+        try:
+            msg = str(stub.Login(request=auth_pb2.Credentials(username=request.data["username"], password=request.data["password"])))
+        except:
+            return JsonResponse({"msg": "Incorrect username or password"}, status=400)
+        import re
+        l = list(re.findall("\".*\"", msg))
+        dic = {"token": l[0][2:-1], "refresh": l[1][2:-1]}
+        channel.close()
+        return JsonResponse(dic, status=200, safe=False)
 
 
 class Charge(viewsets.ModelViewSet):

@@ -29,6 +29,16 @@ class AuthStub(object):
                 request_serializer=auth__pb2.JWTToken.SerializeToString,
                 response_deserializer=auth__pb2.JWTToken.FromString,
                 )
+        self.GetUserInfo = channel.unary_unary(
+                '/auth.Auth/GetUserInfo',
+                request_serializer=auth__pb2.UserID.SerializeToString,
+                response_deserializer=auth__pb2.Users.FromString,
+                )
+        self.ChangePassword = channel.unary_unary(
+                '/auth.Auth/ChangePassword',
+                request_serializer=auth__pb2.PairPassword.SerializeToString,
+                response_deserializer=auth__pb2.User.FromString,
+                )
 
 
 class AuthServicer(object):
@@ -52,6 +62,18 @@ class AuthServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def GetUserInfo(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def ChangePassword(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_AuthServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -69,6 +91,16 @@ def add_AuthServicer_to_server(servicer, server):
                     servicer.RefreshAccessToken,
                     request_deserializer=auth__pb2.JWTToken.FromString,
                     response_serializer=auth__pb2.JWTToken.SerializeToString,
+            ),
+            'GetUserInfo': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetUserInfo,
+                    request_deserializer=auth__pb2.UserID.FromString,
+                    response_serializer=auth__pb2.Users.SerializeToString,
+            ),
+            'ChangePassword': grpc.unary_unary_rpc_method_handler(
+                    servicer.ChangePassword,
+                    request_deserializer=auth__pb2.PairPassword.FromString,
+                    response_serializer=auth__pb2.User.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -128,5 +160,39 @@ class Auth(object):
         return grpc.experimental.unary_unary(request, target, '/auth.Auth/RefreshAccessToken',
             auth__pb2.JWTToken.SerializeToString,
             auth__pb2.JWTToken.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def GetUserInfo(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/auth.Auth/GetUserInfo',
+            auth__pb2.UserID.SerializeToString,
+            auth__pb2.Users.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def ChangePassword(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/auth.Auth/ChangePassword',
+            auth__pb2.PairPassword.SerializeToString,
+            auth__pb2.User.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

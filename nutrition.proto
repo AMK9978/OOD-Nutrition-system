@@ -19,7 +19,7 @@ service Auth {
       post: "/login"
       body: "*"
     };
-  };
+  }
 
   rpc RefreshAccessToken (JWTToken) returns (JWTToken) {
     option (google.api.http) = {
@@ -27,29 +27,6 @@ service Auth {
       body: "*"
     };
   };
-
-  rpc GetUserInfo (UserID) returns (Users) {
-    option (google.api.http) = {
-      post: "/getusers"
-      body: "*"
-    };
-  };
-
-  rpc ChangePassword (PairPassword) returns (User) {
-    option (google.api.http) = {
-      post: "/user/edit_password"
-      body: "*"
-    };
-  };
-}
-
-message PairPassword {
-  string oldPassword = 1;
-  string newPassword = 2;
-}
-
-message UserID {
-  repeated uint64 Id = 1;
 }
 
 message Credentials {
@@ -66,17 +43,7 @@ message PairToken {
   JWTToken access = 2;
 }
 
-message Users {
-  repeated User Users = 1;
-}
-
 message User {
-  uint64 ID = 1;
-  string firstName = 2;
-  string lastName = 3;
-  string email = 4;
   string username = 5;
   string password = 6;
-  string gender = 7;
-  uint64 roleId = 8;
 }
