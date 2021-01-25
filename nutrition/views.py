@@ -1,7 +1,9 @@
+import base64
 import datetime
 import json
 
 import grpc
+import jwt
 import requests
 from django.http import JsonResponse
 from django.utils.decorators import method_decorator
@@ -15,6 +17,17 @@ from nutrition.models import Food, FoodReserve, User
 from nutrition.serializers import FoodReserveSerializer, FoodSerializer, UserSerializer
 
 CACHE_TTL = 60 * 2
+PUBLIC_KEY = base64.b64decode(
+    "LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUlHYk1CQUdCeXFHU000OUFnRUdCU3VCQkFBakE0R0dBQVFBdmRrYTFzcTBRd2h0QStieDFBVHVTSUEzT2oxOQpYMk0rVExzZDF3SlBGbTI0U05OUXFUWFBidFFLamhFemhsK2ZDNWExZ2ttRzNpaTJBcWt6MnRaTWUzVUFDb3JSCm1QZXh5blR0cFFSQWFKalhDOGpkRXNDU3UvMlMrblpBMmdBc25uNDBRQWxzaEpBZHMybmRYd1FBSjk5T2tXeTUKcEduRkQ2M042Vy84ODlZQW9acz0KLS0tLS1FTkQgUFVCTElDIEtFWS0tLS0t")
+SECRET_KEY = "LS0tLS1CRUdJTiBFQyBQUklWQVRFIEtFWS0tLS0tCk1JSGNBZ0VCQkVJQktIMVhZWG5MalZOS0FBRUZVbGVCV1FQcVpWRWdXdkdBcHc3bm40cWpwRStFTVVjNGEzblEKcE5GZVk3RXM5dDFqTks0OE1DcnhCTXU4MDNvRnUzdEIrd3lnQndZRks0RUVBQ09oZ1lrRGdZWUFCQUM5MlJyVwp5clJEQ0cwRDV2SFVCTzVJZ0RjNlBYMWZZejVNdXgzWEFrOFdiYmhJMDFDcE5jOXUxQXFPRVRPR1g1OExscldDClNZYmVLTFlDcVRQYTFreDdkUUFLaXRHWTk3SEtkTzJsQkVCb21OY0x5TjBTd0pLNy9aTDZka0RhQUN5ZWZqUkEKQ1d5RWtCMnphZDFmQkFBbjMwNlJiTG1rYWNVUHJjM3BiL3p6MWdDaG13PT0KLS0tLS1FTkQgRUMgUFJJVkFURSBLRVktLS0tLQ===="
+
+
+def decode(user_token: str):
+    print(user_token)
+    print(PUBLIC_KEY)
+    decoded_token = jwt.decode(user_token, PUBLIC_KEY, algorithms='ES512', options={"verify_signature": False})
+    print(decoded_token)
+    print(decoded_token['username'])
 
 
 class UserViewSet(viewsets.ReadOnlyModelViewSet):
@@ -30,6 +43,7 @@ class FoodViewSet(viewsets.ModelViewSet):
     def list(self, request, *args, **kwargs):
         tomorrow = datetime.datetime.today().date() + datetime.timedelta(days=1)
         next_week = datetime.datetime.today().date() + datetime.timedelta(days=7)
+        decode(str(request.headers.get('Authorization')).split(" ")[1])
         return Response(list(Food.objects.filter(pub_date__range=[tomorrow, next_week]).values()))
 
 
@@ -115,12 +129,15 @@ class Login(viewsets.ModelViewSet):
         stub = auth_pb2_grpc.AuthStub(channel)
         import auth_pb2
         try:
-            msg = str(stub.Login(request=auth_pb2.Credentials(username=request.data["username"], password=request.data["password"])))
+            msg = str(stub.Login(
+                request=auth_pb2.Credentials(username=request.data["username"], password=request.data["password"])))
         except:
             return JsonResponse({"msg": "Incorrect username or password"}, status=400)
         import re
         l = list(re.findall("\".*\"", msg))
-        dic = {"token": l[0][2:-1], "refresh": l[1][2:-1]}
+        dic = {"token": l[0][1:-1], "refresh": l[1][1:-1]}
+        print(l[0], '\n')
+        print(l[1], '\n')
         channel.close()
         return JsonResponse(dic, status=200, safe=False)
 

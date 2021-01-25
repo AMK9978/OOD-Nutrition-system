@@ -16,6 +16,12 @@ class User(AbstractUser):
 class Food(models.Model):
     name = models.CharField(max_length=48)
     price = models.IntegerField(default=0)
+    meal_choices = [
+        ('b', 'breakfast'),
+        ('l', 'launch'),
+        ('d', 'dinner'),
+    ]
+    meal = models.CharField(default="launch", choices=meal_choices, max_length=16)
     capacity = models.IntegerField(default=0)
     pub_date = models.DateField('date published')
 

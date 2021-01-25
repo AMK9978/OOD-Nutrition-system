@@ -16,7 +16,7 @@ class FoodSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Food
-        fields = ['name', 'price', 'capacity', 'pub_date', 'reserved']
+        fields = ['name', 'price', 'meal', 'capacity', 'pub_date', 'reserved']
 
 
 class FoodReserveSerializer(serializers.ModelSerializer):
