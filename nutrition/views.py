@@ -1,38 +1,28 @@
-import base64
 import datetime
 import json
 
 import grpc
-import jwt
 import requests
 from django.http import JsonResponse
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework import viewsets
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 import auth_pb2_grpc
-from nutrition.models import Food, FoodReserve, User
+from nutrition.models import Food, FoodReserve
 from nutrition.serializers import FoodReserveSerializer, FoodSerializer, UserSerializer
 
 CACHE_TTL = 60 * 2
-PUBLIC_KEY = base64.b64decode(
-    "LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUlHYk1CQUdCeXFHU000OUFnRUdCU3VCQkFBakE0R0dBQVFBdmRrYTFzcTBRd2h0QStieDFBVHVTSUEzT2oxOQpYMk0rVExzZDF3SlBGbTI0U05OUXFUWFBidFFLamhFemhsK2ZDNWExZ2ttRzNpaTJBcWt6MnRaTWUzVUFDb3JSCm1QZXh5blR0cFFSQWFKalhDOGpkRXNDU3UvMlMrblpBMmdBc25uNDBRQWxzaEpBZHMybmRYd1FBSjk5T2tXeTUKcEduRkQ2M042Vy84ODlZQW9acz0KLS0tLS1FTkQgUFVCTElDIEtFWS0tLS0t")
-SECRET_KEY = "LS0tLS1CRUdJTiBFQyBQUklWQVRFIEtFWS0tLS0tCk1JSGNBZ0VCQkVJQktIMVhZWG5MalZOS0FBRUZVbGVCV1FQcVpWRWdXdkdBcHc3bm40cWpwRStFTVVjNGEzblEKcE5GZVk3RXM5dDFqTks0OE1DcnhCTXU4MDNvRnUzdEIrd3lnQndZRks0RUVBQ09oZ1lrRGdZWUFCQUM5MlJyVwp5clJEQ0cwRDV2SFVCTzVJZ0RjNlBYMWZZejVNdXgzWEFrOFdiYmhJMDFDcE5jOXUxQXFPRVRPR1g1OExscldDClNZYmVLTFlDcVRQYTFreDdkUUFLaXRHWTk3SEtkTzJsQkVCb21OY0x5TjBTd0pLNy9aTDZka0RhQUN5ZWZqUkEKQ1d5RWtCMnphZDFmQkFBbjMwNlJiTG1rYWNVUHJjM3BiL3p6MWdDaG13PT0KLS0tLS1FTkQgRUMgUFJJVkFURSBLRVktLS0tLQ===="
-
-
-def decode(user_token: str):
-    print(user_token)
-    print(PUBLIC_KEY)
-    decoded_token = jwt.decode(user_token, PUBLIC_KEY, algorithms='ES512', options={"verify_signature": False})
-    print(decoded_token)
-    print(decoded_token['username'])
 
 
 class UserViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
+    def retrieve(self, request, *args, **kwargs):
+        serializer_class = UserSerializer(request.user)
+        return JsonResponse(serializer_class.data, status=200)
 
 
 class FoodViewSet(viewsets.ModelViewSet):
@@ -43,24 +33,20 @@ class FoodViewSet(viewsets.ModelViewSet):
     def list(self, request, *args, **kwargs):
         tomorrow = datetime.datetime.today().date() + datetime.timedelta(days=1)
         next_week = datetime.datetime.today().date() + datetime.timedelta(days=7)
-        decode(str(request.headers.get('Authorization')).split(" ")[1])
         return Response(list(Food.objects.filter(pub_date__range=[tomorrow, next_week]).values()))
 
 
-class FoodReserveViewSet(viewsets.ModelViewSet):
-    queryset = FoodReserve.objects.all()
-    serializer_class = FoodReserveSerializer
-
+class FoodReserveViewSet(APIView):
     @method_decorator(cache_page(CACHE_TTL))
-    def retrieve(self, request, *args, **kwargs):
-        return Response(list(FoodReserve.objects.filter(user_id_id=kwargs["pk"]).values()))
+    def get(self, request):
+        return Response(list(FoodReserve.objects.filter(user_id_id=request.user.id).values()))
 
-    def perform_create(self, serializer):
-        my_user = self.request.data['user_id']
+    @csrf_exempt
+    def post(self, request):
+        user = self.request.user
         my_food = self.request.data['food_id']
-        user = User.objects.get(id=my_user)
         food = Food.objects.get(id=my_food)
-        print(self.request.headers.get('Authorization'))
+        print(user.name)
         today_date = datetime.datetime.today().date()
         if today_date > food.pub_date:
             raise ValidationError('Invalid food to be reserved')
@@ -70,12 +56,15 @@ class FoodReserveViewSet(viewsets.ModelViewSet):
             raise ValidationError('not enough food is left')
         food_reserved = FoodReserve.objects.filter(user_id_id=user.id, date=food.pub_date).last()
         if food_reserved is not None:
-            raise ValidationError("You've already reserved food this day")
+            raise ValidationError("You've already reserved food this day {}".format(food_reserved))
         user.charge -= food.price
         food.capacity -= 1
         user.save()
         food.save()
+        serializer = FoodReserveSerializer(data={"food_id": food.id, "user_id": user.id})
+        serializer.is_valid(raise_exception=ValidationError, )
         serializer.save()
+        return JsonResponse(serializer.data, status=200, safe=False)
 
 
 class AdminLogin(viewsets.ModelViewSet):
@@ -123,6 +112,8 @@ def read_admin_file():
 
 
 class Login(viewsets.ModelViewSet):
+    permission_classes = []
+
     def retrieve(self, request, *args, **kwargs):
         # TODO: Use gRPC calls instead of http calls which are being used currently:
         channel = grpc.insecure_channel('localhost:50051')

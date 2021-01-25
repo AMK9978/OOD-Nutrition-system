@@ -12,17 +12,6 @@ food_detail = FoodViewSet.as_view({
     'patch': 'partial_update',
     'delete': 'destroy'
 })
-foodReserve_list = FoodReserveViewSet.as_view({
-    'get': 'list',
-    'post': 'create'
-})
-foodReserve_detail = FoodReserveViewSet.as_view({
-    'get': 'retrieve',
-    'post': 'create',
-    'put': 'update',
-    'patch': 'partial_update',
-    'delete': 'destroy'
-})
 user_list = UserViewSet.as_view({
     'get': 'list',
 })
@@ -37,13 +26,12 @@ login = Login.as_view({
     'post': 'retrieve'
 })
 
+app_name = "nutrition"
 urlpatterns = [
     path('login/', login),
     path('charge/', charge_detail),
-    path('user/', user_list, name='user-list'),
-    path('user/<int:pk>/', user_detail, name='user-detail'),
+    path('user/', user_detail, name='user-list'),
     path('food/', food_list, name='food-list'),
     path('food/<int:pk>/', food_detail, name='food-detail'),
-    path('food-reserve/', foodReserve_list, name='foodReserve-list'),
-    path('food-reserve/<int:pk>/', foodReserve_detail, name='foodReserve-detail'),
+    path('food-reserve/', FoodReserveViewSet.as_view(), name='foodReserve-detail'),
 ]

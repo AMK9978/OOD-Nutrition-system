@@ -40,11 +40,9 @@ INSTALLED_APPS = [
 ]
 
 REST_FRAMEWORK = {
-    # Use Django's standard `django.contrib.auth` permissions,
-    # or allow read-only access for unauthenticated users.
-    # 'DEFAULT_AUTHENTICATION_CLASSES': (
-    #     'nutrition.auth.Authentication',  # custom authentication class
-    # ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'nutrition.auth.Authentication',
+    ),
 }
 
 MIDDLEWARE = [
