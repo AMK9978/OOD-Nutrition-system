@@ -1,5 +1,5 @@
 # Nutrition-system
-A django project for nutrition system, micro service node, Object oriented design course project, Fall 2020 semester, which uses **django cache**, **docker** as deploy tool and **gRPC** as communicatino tool with authentication and **Rest API** for fron end. For authentication server click [here](https://github.com/UIOOP99/go-auth) and for front side (Android) click [here](https://github.com/UIOOP99/Front-Nutrition-system)
+A django project for nutrition system, micro service node, Object oriented design course project, Fall 2020 semester, which uses **django cache**, **docker** as deploy tool and **gRPC** as communicatino tool with authentication and **Rest API** for front end and **25 percent code coverage** For authentication server click [here](https://github.com/UIOOP99/go-auth) and for front side (Android) click [here](https://github.com/UIOOP99/Front-Nutrition-system)
 
 
 ## Deployment
