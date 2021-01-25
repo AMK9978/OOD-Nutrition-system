@@ -135,4 +135,11 @@ class Login(viewsets.ModelViewSet):
 
 class Charge(viewsets.ModelViewSet):
     def retrieve(self, request, *args, **kwargs):
-        return JsonResponse({"msg": "Comming soon!"}, status=200)
+        user = self.request.user
+        try:
+            user.charge += int(request.data["charge"])
+            user.save()
+            serializer = UserSerializer(user)
+            return JsonResponse({"msg": serializer.data}, status=200)
+        except Exception as e:
+            return JsonResponse({"msg": "Charging failed {}".format(e)}, status=400)
