@@ -1,61 +1,201 @@
+import os
 from unittest import TestCase
 
-import grpc
 import requests
-from rest_framework.test import APIClient
-
-import auth_pb2
-import auth_pb2_grpc
-
-
-class TestAdminLogin(TestCase):
-    def test_retrieve(self):
-        channel = grpc.insecure_channel('localhost:50051')
-        stub = auth_pb2_grpc.AuthStub(channel)
-        stub.Login(auth_pb2.Credentials)
-
-
-class TestFoodViewSet(TestCase):
-    def test_list(self):
-        import os
-        os.environ.setdefault("DJANGO_SETTINGS_MODULE", __file__)
-        import django
-        django.setup()
-
-        # os.environ.setdefault("DJANGO_SETTINGS_MODULE", "NutritionSystem.settings")
-        client = APIClient()
-        client.credentials(
-            HTTP_AUTHORIZATION='Token ' + "eyJhbGciOiJFUzUxMiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MTE2MTg2NzcsInVzZXJfaWQiOjIsInVzZXJuYW1lIjoibmV3X3VzZXIiLCJyb2xlIjowLCJmaXJzdF9uYW1lIjoiIiwibGFzdF9uYW1lIjoiIiwiZW1haWwiOiIifQ.AV1UVEcmkb__bgbp8pvTuSPvhhOkANOD_26Q1KHbbiuCDWAGwzBoHAxi2WfH_gsfkLFwKFtPVw7kfbv-dFrLyh2bAVZxQqOLo-JWI0RzNLKciF8c1Qs5EoM-0fJFF6f-MbXH2i9js6346PpSLk6nhSLYbV73Pn_sEyLAdaFmR2zjMUxC")
-        response = client.get('/food-list/', {'title': 'new idea'}, format='json')
-        self.assertEqual(response.status_code, 200)
-
-
-class TestCharge(TestCase):
-    def test_retrieve(self):
-        self.assertEqual(2, 2)
-
-
-from django.test import TestCase
 
 
 class ViewsTestCase(TestCase):
     def test_index_loads_properly(self):
         """The index page loads properly"""
         url = "http://localhost:8000/api/food/"
-
-        payload = "{\n    \"name\": \"Abb\",\n    \"price\": 1,\n     \"meal\": \"dinner\",\n     \"capacity\": 1000,\n     \"pub_date\": \"2021-1-29\"\n}"
+        payload=''
         headers = {
             'Authorization': 'Bearer eyJhbGciOiJFUzUxMiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MTE2NjAxMjcsInVzZXJfaWQiOjIsInVzZXJuYW1lIjoibmV3X3VzZXIiLCJyb2xlIjowLCJmaXJzdF9uYW1lIjoiIiwibGFzdF9uYW1lIjoiIiwiZW1haWwiOiIifQ.AGBtQUY1Zcz7Jb6yKdJppkHXP7g71vyV3xo7XbEJ9r471vaBqo7qdbnKrWbXs4qnq7eB0PLnGfUMhBjQoifm6Id6AC4IeVOfbw_VB8o4JceTYQmWuDDz_PJuQ2tLUqJgcyGFHrTEWLCv2bYEn4jh3EuP7AnRwK4i0JzOlWY_qX9Ueeai',
             'Content-Type': 'application/json'
         }
 
         response = requests.request("GET", url, headers=headers, data=payload)
+        self.assertEqual(response.status_code, 200)
 
-        print(response.text)
-        print(response)
-        self.assertEquals(response.status_code, 200)
+
+
+class TestFoodReserveViewSet(TestCase):
+
+    def test_perform_create_ok(self):
+        url = "http://localhost:8000/api/food-reserve/"
+
+        payload = "{\n    \"food_id\": \"1\",\n    \"user_id\": \"1\",\n}"
+        headers = {
+            'Authorization': 'Bearer eyJhbGciOiJFUzUxMiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MTE2NjAxMjcsInVzZXJfaWQiOjIsInVzZXJuYW1lIjoibmV3X3VzZXIiLCJyb2xlIjowLCJmaXJzdF9uYW1lIjoiIiwibGFzdF9uYW1lIjoiIiwiZW1haWwiOiIifQ.AGBtQUY1Zcz7Jb6yKdJppkHXP7g71vyV3xo7XbEJ9r471vaBqo7qdbnKrWbXs4qnq7eB0PLnGfUMhBjQoifm6Id6AC4IeVOfbw_VB8o4JceTYQmWuDDz_PJuQ2tLUqJgcyGFHrTEWLCv2bYEn4jh3EuP7AnRwK4i0JzOlWY_qX9Ueeai',
+            'Content-Type': 'application/json'
+        }
+
+        response = requests.request("POST", url, headers=headers, data=payload)
+        self.assertEqual(response.status_code, 200)
+
+
+    def test_perform_create_no_userid(self):
+        url = "http://localhost:8000/api/food-reserve/"
+
+        payload = "{\n    \"food_id\": 1,\n}"
+        headers = {
+            'Authorization': 'Bearer eyJhbGciOiJFUzUxMiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MTE2NjAxMjcsInVzZXJfaWQiOjIsInVzZXJuYW1lIjoibmV3X3VzZXIiLCJyb2xlIjowLCJmaXJzdF9uYW1lIjoiIiwibGFzdF9uYW1lIjoiIiwiZW1haWwiOiIifQ.AGBtQUY1Zcz7Jb6yKdJppkHXP7g71vyV3xo7XbEJ9r471vaBqo7qdbnKrWbXs4qnq7eB0PLnGfUMhBjQoifm6Id6AC4IeVOfbw_VB8o4JceTYQmWuDDz_PJuQ2tLUqJgcyGFHrTEWLCv2bYEn4jh3EuP7AnRwK4i0JzOlWY_qX9Ueeai',
+            'Content-Type': 'application/json'
+        }
+
+        response = requests.request("POST", url, headers=headers, data=payload)
+        self.assertNotEqual(response.status_code, 200)
+
+    def test_perform_create_no_userid_no_foodid(self):
+        url = "http://localhost:8000/api/food-reserve/"
+
+        payload = ""
+        headers = {
+            'Authorization': 'Bearer eyJhbGciOiJFUzUxMiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MTE2NjAxMjcsInVzZXJfaWQiOjIsInVzZXJuYW1lIjoibmV3X3VzZXIiLCJyb2xlIjowLCJmaXJzdF9uYW1lIjoiIiwibGFzdF9uYW1lIjoiIiwiZW1haWwiOiIifQ.AGBtQUY1Zcz7Jb6yKdJppkHXP7g71vyV3xo7XbEJ9r471vaBqo7qdbnKrWbXs4qnq7eB0PLnGfUMhBjQoifm6Id6AC4IeVOfbw_VB8o4JceTYQmWuDDz_PJuQ2tLUqJgcyGFHrTEWLCv2bYEn4jh3EuP7AnRwK4i0JzOlWY_qX9Ueeai',
+            'Content-Type': 'application/json'
+        }
+
+        response = requests.request("POST", url, headers=headers, data=payload)
+        self.assertNotEqual(response.status_code, 200)
+
+    def test_perform_create_wrong_token(self):
+        url = "http://localhost:8000/api/food-reserve/"
+
+        payload = "{\n    \"user_id\": \"3\",\n    \"food_id\": 1,\n}"
+        headers = {
+            'Authorization': 'im the king of this city',
+            'Content-Type': 'application/json'
+        }
+        response = requests.request("POST", url, headers=headers, data=payload)
+        self.assertNotEqual(response.status_code, 200)
+
+    def test_perform_create_food_id_string(self):
+        url = "http://localhost:8000/api/food-reserve/"
+
+        payload = "{\n    \"user_id\": \"3\",\n    \"food_id\": abgusht,\n}"
+        headers = {
+            'Authorization': 'Bearer eyJhbGciOiJFUzUxMiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MTE2NjAxMjcsInVzZXJfaWQiOjIsInVzZXJuYW1lIjoibmV3X3VzZXIiLCJyb2xlIjowLCJmaXJzdF9uYW1lIjoiIiwibGFzdF9uYW1lIjoiIiwiZW1haWwiOiIifQ.AGBtQUY1Zcz7Jb6yKdJppkHXP7g71vyV3xo7XbEJ9r471vaBqo7qdbnKrWbXs4qnq7eB0PLnGfUMhBjQoifm6Id6AC4IeVOfbw_VB8o4JceTYQmWuDDz_PJuQ2tLUqJgcyGFHrTEWLCv2bYEn4jh3EuP7AnRwK4i0JzOlWY_qX9Ueeai',
+            'Content-Type': 'application/json'
+        }
+
+        response = requests.request("POST", url, headers=headers, data=payload)
+        self.assertNotEqual(response.status_code, 200)
 
 
 class TestLogin(TestCase):
+    def test_retrieve_user_exist(self):
+        url = "http://localhost:8000/api/login/"
+
+        payload = "{\n    \"username\": \"new_user\",\n    \"password\": \"1234\",\n}"
+        headers = {
+
+            'Content-Type': 'application/json'
+        }
+
+        response = requests.request("POST", url, headers=headers, data=payload)
+        self.assertEqual(response.status_code, 200)
+
+
+
+    def test_retrieve_user_does_not_exist(self):
+        url = "http://localhost:8000/api/login/"
+
+        payload = "{\n    \"username\": \"u2\",\n    \"password\": 123,\n}"
+        headers = {
+            'Content-Type': 'application/json'
+        }
+
+        response = requests.request("POST", url, headers=headers, data=payload)
+        self.assertNotEqual(response.status_code, 200)
+
+
+class TestAdminLogin(TestCase):
+    def test_retrieve_admin_exist(self):
+        url = "http://localhost:9090/api/login/"
+
+        payload = "{\n    \"username\": \"amk\",\n    \"password\": pbkdf2_sha256$216000$enx34qYnqQv7$59zQR7P7KCXGWY4Q5CiD2LJW8Wa8xsAzYlMy52oOzHU=,\n}"
+        headers = {
+            'Content-Type': 'application/json'
+        }
+
+        response = requests.request("POST", url, headers=headers, data=payload)
+        self.assertEqual(response.status_code, 200)
+
+    def test_retrieve_admin__admin_not_exist(self):
+        url = "http://localhost:9090/api/login/"
+
+        payload = "{\n    \"username\": \"admin2\",\n    \"password\": admin,\n}"
+        headers = {
+            'Content-Type': 'application/json'
+        }
+
+        response = requests.request("POST", url, headers=headers, data=payload)
+        self.assertNotEqual(response.status_code, 200)
+
+
+class TestCharge(TestCase):
     def test_retrieve(self):
-        self.assertEquals(2,2)
+        url = "http://localhost:8000/api/charge/"
+
+        payload = 'charge=1200000'
+        headers = {
+            'Authorization': 'Bearer eyJhbGciOiJFUzUxMiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MTE2NjAxMjcsInVzZXJfaWQiOjIsInVzZXJuYW1lIjoibmV3X3VzZXIiLCJyb2xlIjowLCJmaXJzdF9uYW1lIjoiIiwibGFzdF9uYW1lIjoiIiwiZW1haWwiOiIifQ.AGBtQUY1Zcz7Jb6yKdJppkHXP7g71vyV3xo7XbEJ9r471vaBqo7qdbnKrWbXs4qnq7eB0PLnGfUMhBjQoifm6Id6AC4IeVOfbw_VB8o4JceTYQmWuDDz_PJuQ2tLUqJgcyGFHrTEWLCv2bYEn4jh3EuP7AnRwK4i0JzOlWY_qX9Ueeai',
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+
+        response = requests.request("POST", url, headers=headers, data=payload)
+
+        self.assertEqual(response.status_code, 200)
+
+    def test_retrieve_price_string(self):
+        url = "http://localhost:8000/api/charge/"
+
+        payload = 'charge=ziad'
+        headers = {
+            'Authorization': 'Bearer eyJhbGciOiJFUzUxMiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MTE2NjAxMjcsInVzZXJfaWQiOjIsInVzZXJuYW1lIjoibmV3X3VzZXIiLCJyb2xlIjowLCJmaXJzdF9uYW1lIjoiIiwibGFzdF9uYW1lIjoiIiwiZW1haWwiOiIifQ.AGBtQUY1Zcz7Jb6yKdJppkHXP7g71vyV3xo7XbEJ9r471vaBqo7qdbnKrWbXs4qnq7eB0PLnGfUMhBjQoifm6Id6AC4IeVOfbw_VB8o4JceTYQmWuDDz_PJuQ2tLUqJgcyGFHrTEWLCv2bYEn4jh3EuP7AnRwK4i0JzOlWY_qX9Ueeai',
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+
+        response = requests.request("POST", url, headers=headers, data=payload)
+
+        self.assertNotEqual(response.status_code, 200)
+
+    def test_retrieve_price_large_number(self):
+        url = "http://localhost:8000/api/charge/"
+
+        payload = 'charge=9999999999999'
+        headers = {
+            'Authorization': 'Bearer eyJhbGciOiJFUzUxMiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MTE2NjAxMjcsInVzZXJfaWQiOjIsInVzZXJuYW1lIjoibmV3X3VzZXIiLCJyb2xlIjowLCJmaXJzdF9uYW1lIjoiIiwibGFzdF9uYW1lIjoiIiwiZW1haWwiOiIifQ.AGBtQUY1Zcz7Jb6yKdJppkHXP7g71vyV3xo7XbEJ9r471vaBqo7qdbnKrWbXs4qnq7eB0PLnGfUMhBjQoifm6Id6AC4IeVOfbw_VB8o4JceTYQmWuDDz_PJuQ2tLUqJgcyGFHrTEWLCv2bYEn4jh3EuP7AnRwK4i0JzOlWY_qX9Ueeai',
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+
+        response = requests.request("POST", url, headers=headers, data=payload)
+
+        self.assertNotEqual(response.status_code, 200)
+
+
+
+    def test_retrieve_price_no_auth_token(self):
+        url = "http://localhost:8000/api/charge/"
+
+        payload = 'charge=120000'
+        headers = {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+
+        response = requests.request("POST", url, headers=headers, data=payload)
+
+        self.assertNotEqual(response.status_code, 200)
+
+    def test_retrieve_price_wrong_authorized(self):
+        url = "http://localhost:8000/api/charge/"
+
+        payload = 'charge=120000'
+        headers = {
+            'Authorization': 'this is token',
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+
+        response = requests.request("POST", url, headers=headers, data=payload)
+
+        self.assertNotEqual(response.status_code, 200)
